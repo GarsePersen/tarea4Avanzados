@@ -50,6 +50,7 @@ void agregarNodo(struct Grafo *g, const char nombreNodo){
     nuevo->siguiente = NULL;
     nuevo->vertices = NULL;
     nuevo->visitado = NULL;
+    g->cantNodos = g->cantNodos + 1;
     prev->siguiente = nuevo;
 }
 
@@ -66,30 +67,34 @@ struct Nodo *buscarNodo(struct Grafo *g, const char nombre){
     return NULL;
 }
 
-int comprobarAux(struct Nodo *nodo,int aux2){
-   	 for(struct Vertice *ver = nodo->vertices; ver != NULL; ver = ver->siguiente){
+int comprobarAux(struct Nodo *nodo,int aux){
+	for(struct Vertice *ver = nodo->vertices; ver != NULL; ver = ver->siguiente){
 		if(!ver->nodo->visitado){
+			aux=aux+1;
 			ver->nodo->visitado=true;
-			aux2=aux2+1;
-			aux2=comprobarAux(ver->nodo, aux2);		
-			
+			aux=comprobarAux(ver->nodo, aux);
+			return aux;
 		}
 	}
-	return aux2;
+	return aux;
 }
 
 
-bool comprobar(struct Grafo *g){
-	int aux=0;	
+void comprobar(struct Grafo *g){
 	for(struct Nodo *ptr = g->nodos; ptr != NULL; ptr = ptr->siguiente){
         	for(struct Nodo *ptrAux = g->nodos; ptrAux != NULL; ptrAux = ptrAux->siguiente){
             		ptrAux->visitado = false;
-
-        	}	
+		}
 		ptr->visitado = true;
-		aux=1;
-		aux=aux+comprobarAux(ptr, 0);    
-		printf("%c %i\n", ptr->nombre, aux);
+		printf("\n");
+		int aux=1;
+		aux=comprobarAux(ptr, aux);
+   		printf("\nDesde %c ", ptr->nombre);
+		if(aux==g->cantNodos){
+			printf("se puede");
+		} else {
+			printf("no se puede");
+		}
 	}
 }
 
@@ -156,7 +161,6 @@ void imprimirGrafo(struct Grafo *g){
 	aux=1;
         ptr->visitado = true;
         recorrerVertices(ptr,aux);
-	printf("%i", aux);    
     }
 
 }
